@@ -13,6 +13,9 @@ ditherFreq = 100;
 Period = 5;
 inputChoice = 3;
 
+initialAngle = 0;
+initialVelocity = 0;
+
 t = 0:0.01:10;
 [tout, ~, yout] = sim('satelliteProject', t);
 % goal = tout./tout.*thetar;
@@ -79,52 +82,52 @@ V = a1*x1.^2+x2.^2+ap*x3.^2+ad*x4.^2;
 Vdot = -4*zeta*omega*x2.^2;
 figure(4)
 clf
-plot(tout, V);
 hold all
+plot(tout, V);
 plot(tout, Vdot);
-Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+ad*x4.*x4dot;
-plot(tout, Vdot2)
-x1zero = (a1-omega^2)*2.*x1.*x2;
-x2nonzero = -4*zeta*omega*x2.^2;
-x3zero = (x2.*e./J + ap*x3dot).*2.*x3;
-x4zero = x2.*edot./J + ad*x4dot.*2.*x4;
-plot(tout, x1zero+x2nonzero+x3zero+x4zero);
+% Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+ad*x4.*x4dot;
+% plot(tout, Vdot2)
+% x1zero = (a1-omega^2)*2.*x1.*x2;
+% x2nonzero = -4*zeta*omega*x2.^2;
+% x3zero = (x2.*e./J + ap*x3dot).*2.*x3;
+% x4zero = x2.*edot./J + ad*x4dot.*2.*x4;
+% plot(tout, x1zero+x2nonzero+x3zero+x4zero);
 
 % plot(tout, a1*x1.^2);
 % plot(tout, x2.^2);
 % plot(tout, ap*x3.^2);
 % plot(tout, ad*x4.^2);
-legend('v','vdot', 'vdot2','vdot3');
+legend('v','vdot');
 ylim([-5 5]);
-%,'1','2','3','4'
+%, 'vdot2','vdot3','1','2','3','4'
 
-% x1zero = (a1-omega^2)*2.*x1.*x2;
-% x2nonzero = -4*zeta*omega*x2.^2;
-% x3zero = (x2.*e./J + ap*x3dot).*2.*x3;
-% x4zero = x2.*edot./J + ad*x4dot.*2.*x4;
-figure(5)
-clf
-plot(tout, x1zero)
-hold all
-plot(tout, x3zero)
-plot(tout, x4zero)
-legend('x1','x3', 'x4');
-
-
-x2dotBright = e.*x3/J+edot.*x4/J-2*zeta*omega.*x2-omega^2.*x1;
-figure(6)
-clf
-plot(tout, 4*x2dot);
-hold all
-plot(tout,x2dotBright);
-plot(tout, x2);
-plot(tout, x1);
-ylim([-20 20]);
-legend('x2dot','x2dotBright','x2','x1');
-
-% figure(7)
+% % x1zero = (a1-omega^2)*2.*x1.*x2;
+% % x2nonzero = -4*zeta*omega*x2.^2;
+% % x3zero = (x2.*e./J + ap*x3dot).*2.*x3;
+% % x4zero = x2.*edot./J + ad*x4dot.*2.*x4;
+% figure(5)
 % clf
-% plot(tout, e)
+% plot(tout, x1zero)
 % hold all
-% plot(tout, edot)
-% legend('e','edot');
+% plot(tout, x3zero)
+% plot(tout, x4zero)
+% legend('x1','x3', 'x4');
+% 
+% 
+% x2dotBright = e.*x3/J+edot.*x4/J-2*zeta*omega.*x2-omega^2.*x1;
+% figure(6)
+% clf
+% plot(tout, 4*x2dot);
+% hold all
+% plot(tout,x2dotBright);
+% plot(tout, x2);
+% plot(tout, x1);
+% ylim([-20 20]);
+% legend('x2dot','x2dotBright','x2','x1');
+% 
+% % figure(7)
+% % clf
+% % plot(tout, e)
+% % hold all
+% % plot(tout, edot)
+% % legend('e','edot');
