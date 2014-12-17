@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 22:12:44
+% Last Modified by GUIDE v2.5 16-Dec-2014 23:16:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,12 +58,15 @@ handles.output = hObject;
 % Update handles structure
 handles.Jactual = 2;
 handles.Jguess = 1;
-handles.initialConditions = [0.5 0.5];
+handles.initialAngle = 0.5;
+handles.initialVel = 0.5;
+handles.muP = 10;
+handles.muD = 10;
 handles.ditherAmplitude = 0.01;
 handles.ditherFreq = 100;
 handles.timeSpan = 50;
 handles.plotSpan = 10;
-handles.refSignal = 'Pulse';
+handles.refSignal = 3;
 handles.refAmplitude = 1;
 handles.refFreq = 100;
 handles.results = {};
@@ -269,29 +272,10 @@ function handles = updatePhasePlot(handles)
 
 % --- Executes on mouse press over axes background.
 function Phat_ButtonDownFcn(hObject, eventdata, handles)
-% % hObject    handle to stabilityBoundary (see GCBO)
-% % eventdata  reserved - to be defined in a future version of MATLAB
-% % handles    structure with handles and user data (see GUIDATA)
-% % Updates values of a and b (reaction constants)
-% coords = get(hObject, 'CurrentPoint');
-% newMu = coords(1,1);
-% newSigma = coords(1,2);
-% 
-% % Correct clicking off the screen
-% newMu = max(newMu,0);
-% newMu = min(newMu,2);
-% 
-% newSigma = max(newSigma,0);
-% newSigma = min(newSigma,2);
-% 
-% handles.mu = newMu;
-% handles.sigma = newSigma;
-% mu_str = sprintf('%g', handles.mu);
-% sigma_str = sprintf('%g', handles.sigma);
-% set(handles.dispDitherAmp, 'String', mu_str);
-% set(handles.dispDitherFreq, 'String', sigma_str);
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
+% hObject    handle to stabilityBoundary (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% Updates values of a and b (reaction constants)
 
 function sliderDitherAmp_Callback(hObject, eventdata, handles)
 % hObject    handle to dispDitherAmp (see GCBO)
@@ -364,14 +348,16 @@ function dispDitherAmp_Callback(hObject, eventdata, handles)
 newditherAmp = str2double(get(hObject,'String'));
 minditherAmp = 0;
 maxditherAmp = 1;
-if newditherAmp > maxditherAmp
+if isnan(newditherAmp)
+    set(hObject, 'String', '0.01')
+    newditherAmp = 0.01;
+elseif newditherAmp > maxditherAmp
     set(hObject, 'String', num2str(maxditherAmp))
     newditherAmp = maxditherAmp;
 elseif newditherAmp < minditherAmp
     set(hObject, 'String', num2str(minditherAmp))
     newditherAmp = minditherAmp;
 end
-
 handles.ditherAmplitude = newditherAmp;
 set(handles.sliderDitherAmp,'value', log10(handles.ditherAmplitude));
 % handles = updatePhasePlot(handles);
@@ -402,7 +388,10 @@ newditherFreq = str2double(get(hObject,'String'));
 
 minditherFreq = 1;
 maxditherFreq = 1000;
-if newditherFreq > maxditherFreq
+if isnan(newditherFreq)
+    set(hObject, 'String', '0.01')
+    newditherFreq = 0.01;
+elseif newditherFreq > maxditherFreq
     set(hObject, 'String', num2str(maxditherFreq))
     newditherFreq = maxditherFreq;
 elseif newditherFreq < minditherFreq
@@ -411,7 +400,6 @@ elseif newditherFreq < minditherFreq
 end
 handles.ditherFreq = newditherFreq;
 set(handles.sliderDitherFreq,'value', log10(handles.ditherFreq));
-% handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 
@@ -427,17 +415,38 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-function initCondDisp_Callback(hObject, eventdata, handles)
-% hObject    handle to initCondDisp (see GCBO)
+
+
+
+function dispInitAngle_Callback(hObject, eventdata, handles)
+% hObject    handle to dispInitAngle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of initCondDisp as text
-%        str2double(get(hObject,'String')) returns contents of initCondDisp as a double
+% Hints: get(hObject,'String') returns contents of dispInitAngle as text
+%        str2double(get(hObject,'String')) returns contents of dispInitAngle as a double
+newAngle = str2double(get(hObject,'String'));
+
+minAngle = 0;
+maxAngle = 2*pi;
+if isnan(newAngle)
+    set(hObject, 'String', '0.5')
+    newAngle = 0.5;
+elseif newAngle > maxAngle
+    set(hObject, 'String', num2str(maxAngle))
+    newAngle = maxAngle;
+elseif newAngle < minAngle
+    set(hObject, 'String', num2str(minAngle))
+    newAngle = minAngle;
+end
+handles.initialAngle = newAngle;
+% handles = updatePhasePlot(handles);
+guidata(hObject, handles)
+
 
 % --- Executes during object creation, after setting all properties.
-function initCondDisp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to initCondDisp (see GCBO)
+function dispInitAngle_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispInitAngle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -448,45 +457,33 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in editInitCond.
-function editInitCond_Callback(hObject, eventdata, handles)
-% hObject    handle to editInitCond (see GCBO)
+function dispTimeSpan_Callback(hObject, eventdata, handles)
+% hObject    handle to dispTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-prompt = {'Intial Angle','Initial Radial Frequency'};
-dlg_title = 'Initial Conditions';
-num_lines = 1;
-ic = handles.initialConditions;
-def = {num2str(ic(1)), num2str(ic(2))};
-answer = inputdlg(prompt,dlg_title,num_lines,def);
-assignin('base', 'answer', answer)
-if isempty(answer)
-    %do nothing
-else
-    % Update initial conditions
-    ic1 = min(max(eval(answer{1}), 0), 2*pi);
-    ic2 = min(max(eval(answer{2}), -1000), 1000);
-    handles.initialConditions = [ic1, ic2];
-    ic = handles.initialConditions;
-    icstr = sprintf('Initial Conditions: [%g %g]', ic(1), ic(2));
-    set(handles.initCondDisp, 'String', icstr);
+
+% Hints: get(hObject,'String') returns contents of dispTimeSpan as text
+%        str2double(get(hObject,'String')) returns contents of dispTimeSpan as a double
+newSpan = str2double(get(hObject,'String'));
+
+minSpan = 1;
+maxSpan = 200;
+if isnan(newSpan)
+    set(hObject, 'String', '50')
+    newSpan = 50;
+elseif newSpan > maxSpan
+    set(hObject, 'String', num2str(maxSpan))
+    newSpan = maxSpan;
+elseif newSpan < minSpan
+    set(hObject, 'String', num2str(minSpan))
+    newSpan = minSpan;
 end
-handles = updatePhasePlot(handles);
+handles.timeSpan = newSpan;
 guidata(hObject, handles)
 
-
-function timeSpanDisp_Callback(hObject, eventdata, handles)
-% hObject    handle to timeSpanDisp (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of timeSpanDisp as text
-%        str2double(get(hObject,'String')) returns contents of timeSpanDisp as a double
-
-
 % --- Executes during object creation, after setting all properties.
-function timeSpanDisp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to timeSpanDisp (see GCBO)
+function dispTimeSpan_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -496,30 +493,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in editTimeSpan.
-function editTimeSpan_Callback(hObject, eventdata, handles)
-% hObject    handle to editTimeSpan (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-prompt = {'Time Span (s)'};
-dlg_title = 'Time Span';
-num_lines = 1;
-tspan = handles.timeSpan;
-def = {num2str(tspan)};
-answer = inputdlg(prompt,dlg_title,num_lines,def);
-assignin('base', 'answer', answer)
-if isempty(answer)
-    %do nothing
-else
-    % Update time span
-    handles.timeSpan = min(max(eval(answer{1}),1),300);
-    tspan = handles.timeSpan;
-    tstr = sprintf('Time Span: %g', tspan);
-    set(handles.timeSpanDisp, 'String', tstr);
-end
-handles = updatePhasePlot(handles);
-guidata(hObject, handles)
 
 % --- Executes on button press in hold_axis_lims.
 function hold_axis_lims_Callback(hObject, eventdata, handles)
@@ -550,40 +523,257 @@ DIRECTION = 0;
 % what is funny, it works!! 
 
 
-% --- Executes on button press in defaultInitCond.
-function defaultInitCond_Callback(hObject, eventdata, handles)
-% hObject    handle to defaultInitCond (see GCBO)
+% --- Executes on button press in defaultInitAngle.
+function defaultInitAngle_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultInitAngle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.initialConditions = [0.5 0.5];
-set(handles.initCondDisp, 'String', 'Initial Conditions: [0.5 0.5]');
-handles = updatePhasePlot(handles);
+handles.initialAngle = 0.5;
+set(handles.dispInitAngle, 'String', '0.5');
 guidata(hObject, handles)
-
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over defaultInitCond.
-function defaultInitCond_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to defaultInitCond (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --- Executes on button press in defaultTimeSpan.
 function defaultTimeSpan_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% handles.timeSpan = 50;
-% set(handles.timeSpanDisp, 'String', 'Time Span: 50s');
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
+handles.timeSpan = 50;
+set(handles.dispTimeSpan, 'String', '50');
+guidata(hObject, handles)
 
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over defaultTimeSpan.
-function defaultTimeSpan_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to defaultTimeSpan (see GCBO)
+function dispInertia_Callback(hObject, eventdata, handles)
+% hObject    handle to dispInertia (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispInertia as text
+%        str2double(get(hObject,'String')) returns contents of dispInertia as a double
+newInertia = str2double(get(hObject,'String'));
+
+minInertia = 0.1;
+maxInertia = 100;
+if isnan(newInertia)
+    set(hObject, 'String', '2')
+    newInertia = 2;
+elseif newInertia > maxInertia
+    set(hObject, 'String', num2str(maxInertia))
+    newInertia = maxInertia;
+elseif newInertia < minInertia
+    set(hObject, 'String', num2str(minInertia))
+    newInertia = minInertia;
+end
+handles.Jactual = newInertia;
+guidata(hObject, handles)
+
+% --- Executes during object creation, after setting all properties.
+function dispInertia_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispInertia (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in defaultInertia.
+function defaultInertia_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultInertia (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.Jactual = 2;
+set(handles.dispInertia, 'String', '2');
+guidata(hObject, handles)
+
+
+function dispInertiaGuess_Callback(hObject, eventdata, handles)
+% hObject    handle to dispInertiaGuess (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispInertiaGuess as text
+%        str2double(get(hObject,'String')) returns contents of dispInertiaGuess as a double
+newInertia = str2double(get(hObject,'String'));
+
+minInertia = 0.1;
+maxInertia = 100;
+if isnan(newInertia)
+    set(hObject, 'String', '1')
+    newInertia = 2;
+elseif newInertia > maxInertia
+    set(hObject, 'String', num2str(maxInertia))
+    newInertia = maxInertia;
+elseif newInertia < minInertia
+    set(hObject, 'String', num2str(minInertia))
+    newInertia = minInertia;
+end
+handles.Jguess = newInertia;
+guidata(hObject, handles)
+
+% --- Executes during object creation, after setting all properties.
+function dispInertiaGuess_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispInertiaGuess (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in defaultInertiaGuess.
+function defaultInertiaGuess_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultInertiaGuess (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.Jguess = 1;
+set(handles.dispInertiaGuess, 'String', '1');
+guidata(hObject, handles)
+
+
+function dispPRate_Callback(hObject, eventdata, handles)
+% hObject    handle to dispPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispPRate as text
+%        str2double(get(hObject,'String')) returns contents of dispPRate as a double
+newRate = str2double(get(hObject,'String'));
+
+minRate = 0.1;
+maxRate = 100;
+if isnan(newRate)
+    set(hObject, 'String', '10')
+    newRate = 2;
+elseif newRate > maxRate
+    set(hObject, 'String', num2str(maxRate))
+    newRate = maxRate;
+elseif newRate < minRate
+    set(hObject, 'String', num2str(minRate))
+    newRate = minRate;
+end
+handles.muP = newRate;
+guidata(hObject, handles)
+
+% --- Executes during object creation, after setting all properties.
+function dispPRate_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in defaultPRate.
+function defaultPRate_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.muP = 10;
+set(handles.dispPRate, 'String', '10');
+guidata(hObject, handles)
+
+
+function dispDRate_Callback(hObject, eventdata, handles)
+% hObject    handle to dispDRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispDRate as text
+%        str2double(get(hObject,'String')) returns contents of dispDRate as a double
+newRate = str2double(get(hObject,'String'));
+
+minRate = 0.1;
+maxRate = 100;
+if isnan(newRate)
+    set(hObject, 'String', '10')
+    newRate = 2;
+elseif newRate > maxRate
+    set(hObject, 'String', num2str(maxRate))
+    newRate = maxRate;
+elseif newRate < minRate
+    set(hObject, 'String', num2str(minRate))
+    newRate = minRate;
+end
+handles.muD = newRate;
+guidata(hObject, handles)
+
+% --- Executes during object creation, after setting all properties.
+function dispDRate_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispDRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in defaultDRate.
+function defaultDRate_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultDRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.muD = 10;
+set(handles.dispDRate, 'String', '10');
+guidata(hObject, handles)
+
+
+function dispInitVel_Callback(hObject, eventdata, handles)
+% hObject    handle to dispInitVel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispInitVel as text
+%        str2double(get(hObject,'String')) returns contents of dispInitVel as a double
+newVel = str2double(get(hObject,'String'));
+
+minVel = -1000;
+maxVel = 1000;
+if isnan(newVel)
+    set(hObject, 'String', '0.5')
+    newVel = 2;
+elseif newVel > maxVel
+    set(hObject, 'String', num2str(maxVel))
+    newVel = maxVel;
+elseif newVel < minVel
+    set(hObject, 'String', num2str(minVel))
+    newVel = minVel;
+end
+handles.initialVel = newVel;
+guidata(hObject, handles)
+
+% --- Executes during object creation, after setting all properties.
+function dispInitVel_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispInitVel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in defaultInitVel.
+function defaultInitVel_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultInitVel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.initialVel = 0.5;
+set(handles.dispInitVel, 'String', '0.5');
+guidata(hObject, handles)
 
 
 % --- Executes on mouse press over axes background.
@@ -591,25 +781,6 @@ function Theta_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to Theta (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% coords = get(hObject, 'CurrentPoint');
-% coords = min(max(coords,0),1);
-% handles.initialConditions = [coords(1,1), coords(1,2)];
-% ic = handles.initialConditions;
-% icstr = sprintf('Initial Conditions: [%.3g %.3g]', ic(1), ic(2));
-% set(handles.initCondDisp, 'String', icstr);
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
-
-
-% Attempts to measure the period of a limit cycle
-function period = measureLimitCycle(time, biomass)
-% peakLocs = peakfinder(biomass);
-% peakTimes = time(peakLocs);
-% period = mean(diff(peakTimes));
-
-
-
-
 
 
 % --- Executes on button press in Run.
@@ -625,9 +796,9 @@ assignin('base', 'zeta', 1);
 assignin('base', 'omega', 10);
 assignin('base', 'Jhat', handles.Jguess);
 assignin('base', 'J', handles.Jactual);
-assignin('base', 'mup', 10);
-assignin('base', 'mud', 10);
-assignin('base', 'inputChoice', 3);
+assignin('base', 'mup', handles.muP);
+assignin('base', 'mud', handles.muD);
+assignin('base', 'inputChoice', handles.refSignal);
 assignin('base', 'ditherAmp', handles.ditherAmplitude);
 assignin('base', 'ditherFreq', handles.ditherFreq);
 
@@ -682,7 +853,6 @@ function Run_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-
 function dispSignalAmp_Callback(hObject, eventdata, handles)
 % hObject    handle to dispSignalAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -690,7 +860,22 @@ function dispSignalAmp_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of dispSignalAmp as text
 %        str2double(get(hObject,'String')) returns contents of dispSignalAmp as a double
+newSignalAmp = str2double(get(hObject,'String'));
 
+minSignalAmp = 1;
+maxSignalAmp = 2*pi;
+if isnan(newSignalAmp)
+    set(hObject, 'String', '1')
+    newSignalAmp = 1;
+elseif newSignalAmp > maxSignalAmp
+    set(hObject, 'String', num2str(maxSignalAmp))
+    newSignalAmp = maxSignalAmp;
+elseif newSignalAmp < minSignalAmp
+    set(hObject, 'String', num2str(minSignalAmp))
+    newSignalAmp = minSignalAmp;
+end
+handles.refAmplitude = newSignalAmp;
+guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
 function dispSignalAmp_CreateFcn(hObject, eventdata, handles)
@@ -712,7 +897,22 @@ function dispSignalFreq_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of dispSignalFreq as text
 %        str2double(get(hObject,'String')) returns contents of dispSignalFreq as a double
+newSignalFreq = str2double(get(hObject,'String'));
 
+minSignalFreq = 1;
+maxSignalFreq = 1000;
+if isnan(newSignalFreq)
+    set(hObject, 'String', '100')
+    newSignalFreq = 100;
+elseif newSignalFreq > maxSignalFreq
+    set(hObject, 'String', num2str(maxSignalFreq))
+    newSignalFreq = maxSignalFreq;
+elseif newSignalFreq < minSignalFreq
+    set(hObject, 'String', num2str(minSignalFreq))
+    newSignalFreq = minSignalFreq;
+end
+handles.refFreq = newSignalFreq;
+guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
 function dispSignalFreq_CreateFcn(hObject, eventdata, handles)
@@ -738,30 +938,31 @@ function signalTypeSelect_Callback(hObject, eventdata, handles)
 contents = cellstr(get(hObject,'String'));
 selected = contents{get(hObject,'Value')};
 if (strcmp(selected, 'Constant (Set Point)'))
-    set(handles.textSignalAmp, 'String', 'Set Point')
+    set(handles.textSignalAmp, 'String', 'Set Point (rad)')
     set(handles.textSignalFreq, 'Visible', 'off')
     set(handles.dispSignalFreq, 'Visible', 'off')
-    set(handles.editSignalFreq, 'Visible', 'off')
     set(handles.defaultSignalFreq, 'Visible', 'off')
+    handles.refSignal = 1;
 elseif (strcmp(selected, 'Constant Rotation (Ramp)'))
-    set(handles.textSignalAmp, 'String', 'Set Point')
+    set(handles.textSignalAmp, 'String', 'Set Point (rad)')
     set(handles.textSignalFreq, 'Visible', 'off')
     set(handles.dispSignalFreq, 'Visible', 'off')
-    set(handles.editSignalFreq, 'Visible', 'off')
     set(handles.defaultSignalFreq, 'Visible', 'off')
+    handles.refSignal = 4;
 elseif (strcmp(selected, 'Sinusoid'))
-    set(handles.textSignalAmp, 'String', 'Amplitude')
+    set(handles.textSignalAmp, 'String', 'Amplitude (rad)')
     set(handles.textSignalFreq, 'Visible', 'on')
     set(handles.dispSignalFreq, 'Visible', 'on')
-    set(handles.editSignalFreq, 'Visible', 'on')
     set(handles.defaultSignalFreq, 'Visible', 'on')
+    handles.refSignal = 3;
 else %(strcmp(selected, 'Pulse Train'))
-    set(handles.textSignalAmp, 'String', 'Amplitude')
+    set(handles.textSignalAmp, 'String', 'Amplitude (rad)')
     set(handles.textSignalFreq, 'Visible', 'on')
     set(handles.dispSignalFreq, 'Visible', 'on')
-    set(handles.editSignalFreq, 'Visible', 'on')
     set(handles.defaultSignalFreq, 'Visible', 'on')
+    handles.refSignal = 2;
 end
+guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
 function signalTypeSelect_CreateFcn(hObject, eventdata, handles)
@@ -776,64 +977,13 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in editSignalAmplitude.
-function editSignalAmplitude_Callback(hObject, eventdata, handles)
-% hObject    handle to editSignalAmplitude (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-signals = cellstr(get(handles.signalTypeSelect,'String'));
-signalType = signals{get(handles.signalTypeSelect,'Value')};
-if strcmp(signalType, 'Constant (Set Point)') || strcmp(signalType, 'Constant Rotation (Ramp)')
-    prompt = {'Set Point'};
-    dlg_title = 'Set Point';
-else
-    prompt = {'Amplitude'};
-    dlg_title = 'Reference Signal Amplitude';
-end
-num_lines = 1;
-currentAmp = handles.refAmplitude;
-def = {num2str(currentAmp)};
-answer = inputdlg(prompt,dlg_title,num_lines,def);
-if isempty(answer)
-    % do nothing
-else
-    % Update amplitude
-    handles.refAmplitude = min(max(eval(answer{1}),0),2*pi);
-    ampstr = sprintf('%g rad', handles.refAmplitude);
-    set(handles.dispSignalAmp, 'String', ampstr);
-end
-guidata(hObject, handles)
-
-
-% --- Executes on button press in editSignalFreq.
-function editSignalFreq_Callback(hObject, eventdata, handles)
-% hObject    handle to editSignalFreq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-prompt = {'Frequency'};
-dlg_title = 'Reference Signal Frequency';
-num_lines = 1;
-currentFreq = handles.refFreq;
-def = {num2str(currentFreq)};
-answer = inputdlg(prompt,dlg_title,num_lines,def);
-if isempty(answer)
-    % do nothing
-else
-    % Update frequency
-    handles.refFreq = min(max(eval(answer{1}),1),1000);
-    freqstr = sprintf('%g Hz', handles.refFreq);
-    set(handles.dispSignalFreq, 'String', freqstr);
-end
-guidata(hObject, handles)
-
-
 % --- Executes on button press in defaultSignalAmplitude.
 function defaultSignalAmplitude_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultSignalAmplitude (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.refAmplitude = 1;
-ampstr = sprintf('%g rad', handles.refAmplitude);
+ampstr = sprintf('%g', handles.refAmplitude);
 set(handles.dispSignalAmp, 'String', ampstr);
 guidata(hObject, handles)
 
@@ -842,154 +992,9 @@ function defaultSignalFreq_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultSignalFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.refFreq = min(max(eval(answer{1}),1),1000);
-freqstr = sprintf('%g Hz', handles.refFreq);
+handles.refFreq = 100;
+freqstr = sprintf('%g', handles.refFreq);
 set(handles.dispSignalFreq, 'String', freqstr);
 guidata(hObject, handles)
 
 
-function inertiaDisplay_Callback(hObject, eventdata, handles)
-% hObject    handle to inertiaDisplay (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of inertiaDisplay as text
-%        str2double(get(hObject,'String')) returns contents of inertiaDisplay as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function inertiaDisplay_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to inertiaDisplay (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in editActualInertia.
-function editActualInertia_Callback(hObject, eventdata, handles)
-% hObject    handle to editActualInertia (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in defaultActualInertia.
-function defaultActualInertia_Callback(hObject, eventdata, handles)
-% hObject    handle to defaultActualInertia (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function inertiaGuessDisplay_Callback(hObject, eventdata, handles)
-% hObject    handle to inertiaGuessDisplay (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of inertiaGuessDisplay as text
-%        str2double(get(hObject,'String')) returns contents of inertiaGuessDisplay as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function inertiaGuessDisplay_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to inertiaGuessDisplay (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in editInertiaGuess.
-function editInertiaGuess_Callback(hObject, eventdata, handles)
-% hObject    handle to editInertiaGuess (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in defaultInertiaGuess.
-function defaultInertiaGuess_Callback(hObject, eventdata, handles)
-% hObject    handle to defaultInertiaGuess (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function dispPRate_Callback(hObject, eventdata, handles)
-% hObject    handle to dispPRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of dispPRate as text
-%        str2double(get(hObject,'String')) returns contents of dispPRate as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function dispPRate_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to dispPRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in editPRate.
-function editPRate_Callback(hObject, eventdata, handles)
-% hObject    handle to editPRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in defaultPRate.
-function defaultPRate_Callback(hObject, eventdata, handles)
-% hObject    handle to defaultPRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function dispDRate_Callback(hObject, eventdata, handles)
-% hObject    handle to dispDRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of dispDRate as text
-%        str2double(get(hObject,'String')) returns contents of dispDRate as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function dispDRate_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to dispDRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in editDRate.
-function editDRate_Callback(hObject, eventdata, handles)
-% hObject    handle to editDRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in defaultDRate.
-function defaultDRate_Callback(hObject, eventdata, handles)
-% hObject    handle to defaultDRate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
