@@ -68,7 +68,7 @@ handles.timeSpan = 50;
 handles.plotSpan = 10;
 handles.refSignal = 2;
 handles.refAmplitude = 1;
-handles.refFreq = 100;
+handles.refFreq = 1;
 handles.ditherOn = 1;
 handles.results = {};
 
@@ -877,7 +877,7 @@ plot(tout, V);
 xlabel('Time (s)');
 ylabel('a_1x_1^2+x_2^2+a_px_3^2+a_dx_4^2');
 % legend('D','D\_hat');
-title('Lyapnuov over time');
+title('Lyapunov over time');
 
 axes(handles.VDotPlot);
 cla(handles.VDotPlot);
@@ -893,7 +893,7 @@ ylim(ylims);
 xlabel('Time (s)');
 ylabel('dV/dt');
 % legend('D','D\_hat');
-title('Derivative of Lyapnuov over time');
+title('Derivative of Lyapunov over time');
 
 % ylim([-20*handles.refAmplitude 20*handles.refAmplitude]);
 guidata(hObject, handles)
