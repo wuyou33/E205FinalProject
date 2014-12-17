@@ -807,6 +807,9 @@ assignin('base', 'mup', handles.muP);
 assignin('base', 'mud', handles.muD);
 assignin('base', 'inputChoice', handles.refSignal);
 
+assignin('base', 'initialAngle', handles.initialAngle);
+assignin('base', 'initialVelocity', handles.initialVel);
+
 ditherAmp = 0;
 if handles.ditherOn == 1
    ditherAmp =  handles.ditherAmplitude;
