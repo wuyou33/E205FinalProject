@@ -599,6 +599,58 @@ function Run_Callback(hObject, eventdata, handles)
 % hObject    handle to Run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+assignin('base', 'zeta', 1);
+assignin('base', 'omega', 10);
+assignin('base', 'Jhat', 1);
+assignin('base', 'J', 2);
+assignin('base', 'mup', 10);
+assignin('base', 'mud', 10);
+assignin('base', 'inputChoice', 3);
+assignin('base', 'ditherAmp', 0.01);
+assignin('base', 'ditherFreq', 100);
+
+t = 0:0.01:10;
+[tout, ~, yout] = sim('satelliteProject', t);
+
+x1 = yout(:,5); 
+x2 = yout(:,6); 
+u = yout(:,7); 
+input = yout(:,8); 
+
+axes(handles.InputSignal);
+cla(handles.InputSignal);
+plot(tout,input);
+
+axes(handles.Theta);
+cla(handles.Theta);
+plot(tout,yout(:,1)); % Theta
+hold all
+plot(tout,yout(:,4)); % Theta_m
+xlabel('Time (s)');
+ylabel('Theta (rad)');
+legend('Theta','Theta_m');
+title('Theta over time');
+
+axes(handles.Phat);
+cla(handles.Phat);
+plot(tout,yout(:,2)); % P
+hold all
+% plot(tout,tout./tout*J*omega^2); % P_hat
+xlabel('Time (s)');
+ylabel('P');
+title('P over time');
+
+axes(handles.Dhat);
+cla(handles.Dhat);
+plot(tout,yout(:,3));
+hold all
+% plot(tout,tout./tout*J*2*zeta*omega); % D_hat
+xlabel('Time (s)');
+ylabel('D');
+title('D over time');
+
+
+guidata(hObject, handles)
 
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
@@ -607,76 +659,6 @@ function Run_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to Run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-thetar = 1; % radians
-thetardot = 0;
-zeta = 1;
-omega = 10;
-Jhat = 1;
-J = 2;
-mup = 10;
-mud = 10;
-
-t = 0:0.01:100;
-[tout, ~, yout] = sim('satelliteProject', t);
-goal = tout./tout.*thetar;
-x1 = yout(:,5); 
-x2 = yout(:,6); 
-u = yout(:,7); 
-input = yout(:,8); 
-
-% figure(2)
-% clf
-% plot(tout,input);
-
-% %Plot time domain results
-axes(handles.Dhat)
-
-% % Store old x and y axis limits
-% old_xlims = xlim;
-% old_ylims = ylim;
-
-cla(handles.Input);
-% hold all
-plot(tout,input);
-% plot(t,x(:,1), 'green');
-% plot(t,x(:,2), 'red');
-% legend('Prey','Predator');
-
-T = 0.01; %s
-I = T*sum(x1.^2+x2.^2+(u.^2)/100);
-
-% disp('I: ')
-% disp(I);
-
-% figure(1)
-% clf
-% subplot(3,1,1);
-% plot(tout,yout(:,1)); % Theta
-% hold all
-% plot(tout,yout(:,4)); % Theta_m
-% % plot(tout,goal,'--'); % Theta_r
-% % ylim([0.04 0.07]);
-% xlabel('Time (s)');
-% ylabel('Theta (rad)');
-% legend('Theta','Theta_m','Theta_r');
-% title('Theta over time');
-% subplot(3,1,2);
-% plot(tout,yout(:,2)); % P
-% hold all
-% % plot(tout,tout./tout*J*omega^2); % P_hat
-% xlabel('Time (s)');
-% ylabel('P');
-% title('P over time');
-% subplot(3,1,3); % D
-% plot(tout,yout(:,3));
-% hold all
-% % plot(tout,tout./tout*J*2*zeta*omega); % D_hat
-% xlabel('Time (s)');
-% ylabel('D');
-% title('D over time');
-
-
-
 
 
 function signalAmpDisp_Callback(hObject, eventdata, handles)
