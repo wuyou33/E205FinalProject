@@ -952,11 +952,11 @@ function dispSignalFreq_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of dispSignalFreq as a double
 newSignalFreq = str2double(get(hObject,'String'));
 
-minSignalFreq = 1;
+minSignalFreq = 0.01;
 maxSignalFreq = 1000;
 if isnan(newSignalFreq)
-    set(hObject, 'String', '100')
-    newSignalFreq = 100;
+    set(hObject, 'String', '1')
+    newSignalFreq = 1;
 elseif newSignalFreq > maxSignalFreq
     set(hObject, 'String', num2str(maxSignalFreq))
     newSignalFreq = maxSignalFreq;
@@ -1045,7 +1045,7 @@ function defaultSignalFreq_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultSignalFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.refFreq = 100;
+handles.refFreq = 1;
 freqstr = sprintf('%g', handles.refFreq);
 set(handles.dispSignalFreq, 'String', freqstr);
 guidata(hObject, handles)
