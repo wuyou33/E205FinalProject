@@ -7,7 +7,7 @@ J = 2;
 mup = 10;
 mud = 10;
 
-t = 0:0.01:10000;
+t = 0:0.01:100;
 [tout, ~, yout] = sim('satelliteProject', t);
 goal = tout./tout.*thetar;
 
