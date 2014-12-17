@@ -755,7 +755,7 @@ axes(handles.InputSignal);
 cla(handles.InputSignal);
 plot(tout,input);
 xlabel('Time (s)');
-ylabel('Input');
+ylabel('Reference Input (rad)');
 % legend('Inpu);
 title('Reference Signal');
 
@@ -926,7 +926,7 @@ if (strcmp(selected, 'Constant (Set Point)'))
     set(handles.defaultSignalFreq, 'Visible', 'off')
     handles.refSignal = 1;
 elseif (strcmp(selected, 'Constant Rotation (Ramp)'))
-    set(handles.textSignalAmp, 'String', 'Set Point (rad)')
+    set(handles.textSignalAmp, 'String', 'Set Point (rad/s)')
     set(handles.textSignalFreq, 'Visible', 'off')
     set(handles.dispSignalFreq, 'Visible', 'off')
     set(handles.defaultSignalFreq, 'Visible', 'off')
