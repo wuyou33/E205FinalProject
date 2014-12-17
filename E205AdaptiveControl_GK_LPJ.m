@@ -56,11 +56,17 @@ function E205AdaptiveControl_GK_LPJ_OpeningFcn(hObject, eventdata, handles, vara
 handles.output = hObject;
 
 % Update handles structure
-handles.mu = 0;
-handles.sigma = 0;
+handles.Jactual = 2;
+handles.Jguess = 1;
 handles.initialConditions = [0.5 0.5];
-handles.results = {};
+handles.ditherAmplitude = 0.01;
+handles.ditherFreq = 100;
 handles.timeSpan = 50;
+handles.plotSpan = 10;
+handles.refSignal = 'Pulse';
+handles.refAmplitude = 1;
+handles.refFreq = 100;
+handles.results = {};
 
 guidata(hObject, handles);
 
@@ -668,3 +674,14 @@ I = T*sum(x1.^2+x2.^2+(u.^2)/100);
 % xlabel('Time (s)');
 % ylabel('D');
 % title('D over time');
+
+
+
+
+
+
+
+
+
+
+
