@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 21:51:20
+% Last Modified by GUIDE v2.5 16-Dec-2014 22:12:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,8 +68,8 @@ handles.refAmplitude = 1;
 handles.refFreq = 100;
 handles.results = {};
 
-set(handles.mu_slider,'value', log10(handles.ditherAmplitude));
-set(handles.sigma_slider,'value', log10(handles.ditherFreq));
+set(handles.sliderDitherAmp,'value', log10(handles.ditherAmplitude));
+set(handles.sliderDitherFreq,'value', log10(handles.ditherFreq));
 
 guidata(hObject, handles);
 
@@ -141,8 +141,8 @@ function handles = updatePhasePlot(handles)
 % sigma = handles.sigma;
 % 
 % % Readjust sliders to reflect latest values of mu and sigma
-% set(handles.mu_slider,'value', mu);
-% set(handles.sigma_slider,'value', sigma);
+% set(handles.sliderDitherAmp,'value', mu);
+% set(handles.sliderDitherFreq,'value', sigma);
 % 
 % % Define and clear axes
 % axes(handles.Phat);
@@ -288,28 +288,28 @@ function Phat_ButtonDownFcn(hObject, eventdata, handles)
 % handles.sigma = newSigma;
 % mu_str = sprintf('%g', handles.mu);
 % sigma_str = sprintf('%g', handles.sigma);
-% set(handles.mu_disp, 'String', mu_str);
-% set(handles.sigma_disp, 'String', sigma_str);
+% set(handles.dispDitherAmp, 'String', mu_str);
+% set(handles.dispDitherFreq, 'String', sigma_str);
 % handles = updatePhasePlot(handles);
 % guidata(hObject, handles)
 
-function mu_slider_Callback(hObject, eventdata, handles)
-% hObject    handle to mu_disp (see GCBO)
+function sliderDitherAmp_Callback(hObject, eventdata, handles)
+% hObject    handle to dispDitherAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of mu_disp as text
-%        str2double(get(hObject,'String')) returns contents of mu_disp as a double
+% Hints: get(hObject,'String') returns contents of dispDitherAmp as text
+%        str2double(get(hObject,'String')) returns contents of dispDitherAmp as a double
 sliderValue = get(hObject,'value');
 handles.ditherAmplitude = 10^sliderValue;
 ditherAmp_str = sprintf('%g', handles.ditherAmplitude);
-set(handles.mu_disp, 'String', ditherAmp_str);
+set(handles.dispDitherAmp, 'String', ditherAmp_str);
 % handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
-function mu_slider_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to mu_disp (see GCBO)
+function sliderDitherAmp_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispDitherAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -321,28 +321,28 @@ end
 
 
 
-function sigma_slider_Callback(hObject, eventdata, handles)
-% hObject    handle to sigma_disp (see GCBO)
+function sliderDitherFreq_Callback(hObject, eventdata, handles)
+% hObject    handle to dispDitherFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of sigma_disp as text
-%        str2double(get(hObject,'String')) returns contents of sigma_disp as a double
+% Hints: get(hObject,'String') returns contents of dispDitherFreq as text
+%        str2double(get(hObject,'String')) returns contents of dispDitherFreq as a double
 % handles.sigma = get(hObject,'value');
 % sigma_str = sprintf('%g', handles.sigma);
-% set(handles.sigma_disp, 'String', sigma_str);
+% set(handles.dispDitherFreq, 'String', sigma_str);
 % handles = updatePhasePlot(handles);
 % guidata(hObject, handles)
 sliderValue = get(hObject,'value');
 handles.ditherFreq = 10^sliderValue;
 ditherFreq_str = sprintf('%g', handles.ditherFreq);
-set(handles.sigma_disp, 'String', ditherFreq_str);
+set(handles.dispDitherFreq, 'String', ditherFreq_str);
 % handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
-function sigma_slider_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to sigma_disp (see GCBO)
+function sliderDitherFreq_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispDitherFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -354,13 +354,13 @@ end
 
 
 
-function mu_disp_Callback(hObject, eventdata, handles)
-% hObject    handle to mu_disp (see GCBO)
+function dispDitherAmp_Callback(hObject, eventdata, handles)
+% hObject    handle to dispDitherAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of mu_disp as text
-%        str2double(get(hObject,'String')) returns contents of mu_disp as a double
+% Hints: get(hObject,'String') returns contents of dispDitherAmp as text
+%        str2double(get(hObject,'String')) returns contents of dispDitherAmp as a double
 newditherAmp = str2double(get(hObject,'String'));
 minditherAmp = 0;
 maxditherAmp = 1;
@@ -373,13 +373,13 @@ elseif newditherAmp < minditherAmp
 end
 
 handles.ditherAmplitude = newditherAmp;
-set(handles.mu_slider,'value', log10(handles.ditherAmplitude));
+set(handles.sliderDitherAmp,'value', log10(handles.ditherAmplitude));
 % handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
-function mu_disp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to mu_disp (see GCBO)
+function dispDitherAmp_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispDitherAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -391,13 +391,13 @@ end
 
 
 
-function sigma_disp_Callback(hObject, eventdata, handles)
-% hObject    handle to sigma_disp (see GCBO)
+function dispDitherFreq_Callback(hObject, eventdata, handles)
+% hObject    handle to dispDitherFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of sigma_disp as text
-%        str2double(get(hObject,'String')) returns contents of sigma_disp as a double
+% Hints: get(hObject,'String') returns contents of dispDitherFreq as text
+%        str2double(get(hObject,'String')) returns contents of dispDitherFreq as a double
 newditherFreq = str2double(get(hObject,'String'));
 
 minditherFreq = 1;
@@ -410,14 +410,14 @@ elseif newditherFreq < minditherFreq
     newditherFreq = minditherFreq;
 end
 handles.ditherFreq = newditherFreq;
-set(handles.sigma_slider,'value', log10(handles.ditherFreq));
+set(handles.sliderDitherFreq,'value', log10(handles.ditherFreq));
 % handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 
 % --- Executes during object creation, after setting all properties.
-function sigma_disp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to sigma_disp (see GCBO)
+function dispDitherFreq_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispDitherFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -618,6 +618,9 @@ function Run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+assignin('base', 'Amplitude', handles.refAmplitude);
+assignin('base', 'Frequency', handles.refFreq);
+assignin('base', 'Period', 5);
 assignin('base', 'zeta', 1);
 assignin('base', 'omega', 10);
 assignin('base', 'Jhat', handles.Jguess);
