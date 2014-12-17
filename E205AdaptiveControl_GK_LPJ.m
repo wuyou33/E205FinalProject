@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 20:56:41
+% Last Modified by GUIDE v2.5 16-Dec-2014 21:51:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -913,5 +913,79 @@ function editInertiaGuess_Callback(hObject, eventdata, handles)
 % --- Executes on button press in defaultInertiaGuess.
 function defaultInertiaGuess_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultInertiaGuess (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function dispPRate_Callback(hObject, eventdata, handles)
+% hObject    handle to dispPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispPRate as text
+%        str2double(get(hObject,'String')) returns contents of dispPRate as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function dispPRate_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in editPRate.
+function editPRate_Callback(hObject, eventdata, handles)
+% hObject    handle to editPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in defaultPRate.
+function defaultPRate_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultPRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function dispDRate_Callback(hObject, eventdata, handles)
+% hObject    handle to dispDRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of dispDRate as text
+%        str2double(get(hObject,'String')) returns contents of dispDRate as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function dispDRate_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispDRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in editDRate.
+function editDRate_Callback(hObject, eventdata, handles)
+% hObject    handle to editDRate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in defaultDRate.
+function defaultDRate_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultDRate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
