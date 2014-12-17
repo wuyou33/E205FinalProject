@@ -453,24 +453,26 @@ function editInitCond_Callback(hObject, eventdata, handles)
 % hObject    handle to editInitCond (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% prompt = {'Intial Prey Biomass','Initial Predator Biomass'};
-% dlg_title = 'Initial Conditions';
-% num_lines = 1;
-% ic = handles.initialConditions;
-% def = {num2str(ic(1)), num2str(ic(2))};
-% answer = inputdlg(prompt,dlg_title,num_lines,def);
-% assignin('base', 'answer', answer)
-% if isempty(answer)
-%     %do nothing
-% else
-%     % Update initial conditions
-%     handles.initialConditions = min(max([eval(answer{1}), eval(answer{2})],0),1);
-%     ic = handles.initialConditions;
-%     icstr = sprintf('Initial Conditions: [%g %g]', ic(1), ic(2));
-%     set(handles.initCondDisp, 'String', icstr);
-% end
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
+prompt = {'Intial Angle','Initial Radial Frequency'};
+dlg_title = 'Initial Conditions';
+num_lines = 1;
+ic = handles.initialConditions;
+def = {num2str(ic(1)), num2str(ic(2))};
+answer = inputdlg(prompt,dlg_title,num_lines,def);
+assignin('base', 'answer', answer)
+if isempty(answer)
+    %do nothing
+else
+    % Update initial conditions
+    ic1 = min(max(eval(answer{1}), 0), 2*pi);
+    ic2 = min(max(eval(answer{2}), -1000), 1000);
+    handles.initialConditions = [ic1, ic2];
+    ic = handles.initialConditions;
+    icstr = sprintf('Initial Conditions: [%g %g]', ic(1), ic(2));
+    set(handles.initCondDisp, 'String', icstr);
+end
+handles = updatePhasePlot(handles);
+guidata(hObject, handles)
 
 
 function timeSpanDisp_Callback(hObject, eventdata, handles)
