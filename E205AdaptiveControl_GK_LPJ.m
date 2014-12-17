@@ -63,7 +63,6 @@ handles.initialVel = 0;
 handles.muP = 10;
 handles.muD = 10;
 handles.ditherAmplitude = 0.01;
-handles.ditherFreq = 100;
 handles.timeSpan = 50;
 handles.plotSpan = 10;
 handles.refSignal = 2;
@@ -73,7 +72,6 @@ handles.ditherOn = 1;
 handles.results = {};
 
 set(handles.sliderDitherAmp,'value', log10(handles.ditherAmplitude));
-set(handles.sliderDitherFreq,'value', log10(handles.ditherFreq));
 
 Run_Callback(hObject, eventdata, handles);
 
@@ -308,39 +306,6 @@ end
 
 
 
-function sliderDitherFreq_Callback(hObject, eventdata, handles)
-% hObject    handle to dispDitherFreq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of dispDitherFreq as text
-%        str2double(get(hObject,'String')) returns contents of dispDitherFreq as a double
-% handles.sigma = get(hObject,'value');
-% sigma_str = sprintf('%g', handles.sigma);
-% set(handles.dispDitherFreq, 'String', sigma_str);
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
-sliderValue = get(hObject,'value');
-handles.ditherFreq = 10^sliderValue;
-ditherFreq_str = sprintf('%g', handles.ditherFreq);
-set(handles.dispDitherFreq, 'String', ditherFreq_str);
-% handles = updatePhasePlot(handles);
-guidata(hObject, handles)
-
-% --- Executes during object creation, after setting all properties.
-function sliderDitherFreq_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to dispDitherFreq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function dispDitherAmp_Callback(hObject, eventdata, handles)
 % hObject    handle to dispDitherAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -377,47 +342,6 @@ function dispDitherAmp_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function dispDitherFreq_Callback(hObject, eventdata, handles)
-% hObject    handle to dispDitherFreq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of dispDitherFreq as text
-%        str2double(get(hObject,'String')) returns contents of dispDitherFreq as a double
-newditherFreq = str2double(get(hObject,'String'));
-
-minditherFreq = 1;
-maxditherFreq = 1000;
-if isnan(newditherFreq)
-    set(hObject, 'String', '0.01')
-    newditherFreq = 0.01;
-elseif newditherFreq > maxditherFreq
-    set(hObject, 'String', num2str(maxditherFreq))
-    newditherFreq = maxditherFreq;
-elseif newditherFreq < minditherFreq
-    set(hObject, 'String', num2str(minditherFreq))
-    newditherFreq = minditherFreq;
-end
-handles.ditherFreq = newditherFreq;
-set(handles.sliderDitherFreq,'value', log10(handles.ditherFreq));
-guidata(hObject, handles)
-
-
-% --- Executes during object creation, after setting all properties.
-function dispDitherFreq_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to dispDitherFreq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 
 
@@ -815,7 +739,6 @@ if handles.ditherOn == 1
    ditherAmp =  handles.ditherAmplitude;
 end
 assignin('base', 'ditherAmp', ditherAmp);
-assignin('base', 'ditherFreq', handles.ditherFreq);
 
 dt = 0.001;
 t = 0:dt:handles.timeSpan;
