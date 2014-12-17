@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 23:16:55
+% Last Modified by GUIDE v2.5 17-Dec-2014 01:18:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -60,19 +60,22 @@ handles.Jactual = 2;
 handles.Jguess = 1;
 handles.initialAngle = 0.5;
 handles.initialVel = 0.5;
-handles.muP = 10;
-handles.muD = 10;
+handles.muP = 100;
+handles.muD = 100;
 handles.ditherAmplitude = 0.01;
 handles.ditherFreq = 100;
 handles.timeSpan = 50;
 handles.plotSpan = 10;
-handles.refSignal = 1;
+handles.refSignal = 2;
 handles.refAmplitude = 1;
 handles.refFreq = 100;
+handles.ditherOn = 1;
 handles.results = {};
 
 set(handles.sliderDitherAmp,'value', log10(handles.ditherAmplitude));
 set(handles.sliderDitherFreq,'value', log10(handles.ditherFreq));
+
+Run_Callback(hObject, eventdata, handles);
 
 guidata(hObject, handles);
 
@@ -346,7 +349,7 @@ function dispDitherAmp_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of dispDitherAmp as text
 %        str2double(get(hObject,'String')) returns contents of dispDitherAmp as a double
 newditherAmp = str2double(get(hObject,'String'));
-minditherAmp = 0;
+minditherAmp = 0.001;
 maxditherAmp = 1;
 if isnan(newditherAmp)
     set(hObject, 'String', '0.01')
@@ -803,7 +806,12 @@ assignin('base', 'J', handles.Jactual);
 assignin('base', 'mup', handles.muP);
 assignin('base', 'mud', handles.muD);
 assignin('base', 'inputChoice', handles.refSignal);
-assignin('base', 'ditherAmp', handles.ditherAmplitude);
+
+ditherAmp = 0;
+if handles.ditherOn == 1
+   ditherAmp =  handles.ditherAmplitude;
+end
+assignin('base', 'ditherAmp', ditherAmp);
 assignin('base', 'ditherFreq', handles.ditherFreq);
 
 t = 0:0.01:handles.timeSpan;
@@ -811,12 +819,18 @@ t = 0:0.01:handles.timeSpan;
 
 x1 = yout(:,5); 
 x2 = yout(:,6); 
+x3 = yout(:,9); 
+x4 = yout(:,10); 
 u = yout(:,7); 
 input = yout(:,8); 
 
 axes(handles.InputSignal);
 cla(handles.InputSignal);
 plot(tout,input);
+xlabel('Time (s)');
+ylabel('Input');
+% legend('Inpu);
+title('Reference Signal');
 
 axes(handles.Theta);
 cla(handles.Theta);
@@ -852,7 +866,36 @@ ylabel('D');
 legend('D','D\_hat');
 title('D over time');
 
+%Lyapunov stuff
+a1 = omega^2;
+ap = 1/(handles.Jactual*handles.muP);
+ad = 1/(handles.Jactual*handles.muD);
+V = a1*x1.^2+x2.^2+ap*x3.^2+ad*x4.^2;
+axes(handles.VPlot);
+cla(handles.VPlot);
+plot(tout, V);
+xlabel('Time (s)');
+ylabel('a_1x_1^2+x_2^2+a_px_3^2+a_dx_4^2');
+% legend('D','D\_hat');
+title('Lyapnuov over time');
 
+axes(handles.VDotPlot);
+cla(handles.VDotPlot);
+
+x3dot = yout(:,11); 
+x4dot = yout(:,12); 
+x2dot = yout(:,13); 
+Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+ad*x4.*x4dot;
+% plot(tout(floor(length(tout)*9/10):length(tout)), Vdot2(floor(length(tout)*9/10):length(tout)));
+% ylims = ylim;
+plot(tout,Vdot2)
+% ylim(ylims);
+xlabel('Time (s)');
+ylabel('dV/dt');
+% legend('D','D\_hat');
+title('Derivative of Lyapnuov over time');
+
+% ylim([-20*handles.refAmplitude 20*handles.refAmplitude]);
 guidata(hObject, handles)
 
 
@@ -1008,3 +1051,14 @@ set(handles.dispSignalFreq, 'String', freqstr);
 guidata(hObject, handles)
 
 
+
+
+% --- Executes on button press in checkbox2.
+function checkbox2_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox2
+handles.ditherOn = get(hObject, 'Value');
+guidata(hObject, handles)
