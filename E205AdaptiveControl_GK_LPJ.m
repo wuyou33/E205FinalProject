@@ -886,10 +886,10 @@ x3dot = yout(:,11);
 x4dot = yout(:,12); 
 x2dot = yout(:,13); 
 Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+ad*x4.*x4dot;
-% plot(tout(floor(length(tout)*9/10):length(tout)), Vdot2(floor(length(tout)*9/10):length(tout)));
-% ylims = ylim;
+plot(tout(floor(length(tout)*9/10):length(tout)), Vdot2(floor(length(tout)*9/10):length(tout)));
+ylims = ylim;
 plot(tout,Vdot2)
-% ylim(ylims);
+ylim(ylims);
 xlabel('Time (s)');
 ylabel('dV/dt');
 % legend('D','D\_hat');
@@ -1010,9 +1010,9 @@ elseif (strcmp(selected, 'Sinusoid'))
     handles.refSignal = 3;
 else %(strcmp(selected, 'Pulse Train'))
     set(handles.textSignalAmp, 'String', 'Amplitude (rad)')
-    set(handles.textSignalFreq, 'Visible', 'on')
-    set(handles.dispSignalFreq, 'Visible', 'on')
-    set(handles.defaultSignalFreq, 'Visible', 'on')
+    set(handles.textSignalFreq, 'Visible', 'off')
+    set(handles.dispSignalFreq, 'Visible', 'off')
+    set(handles.defaultSignalFreq, 'Visible', 'off')
     handles.refSignal = 2;
 end
 guidata(hObject, handles)
