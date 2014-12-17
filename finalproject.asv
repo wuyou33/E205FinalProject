@@ -11,7 +11,7 @@ Frequency = 1;
 ditherAmp = 0.00;
 ditherFreq = 100;
 Period = 5;
-inputChoice = 3;
+inputChoice = 1;
 
 t = 0:0.01:10;
 [tout, ~, yout] = sim('satelliteProject', t);
@@ -117,14 +117,13 @@ clf
 plot(tout, 4*x2dot);
 hold all
 plot(tout,x2dotBright);
-plot(tout, x2);
-plot(tout, x1);
 ylim([-20 20]);
-legend('x2dot','x2dotBright','x2','x1');
+legend('x2dot','x2dotBright');
 
-% figure(7)
-% clf
-% plot(tout, e)
-% hold all
-% plot(tout, edot)
-% legend('e','edot');
+figure(7)
+clf
+plot(tout, e)
+hold all
+plot(
+
+
