@@ -789,11 +789,15 @@ function Run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Make these inputs?
+zeta = 1;
+omega = 10;
+
 assignin('base', 'Amplitude', handles.refAmplitude);
 assignin('base', 'Frequency', handles.refFreq);
 assignin('base', 'Period', 5);
-assignin('base', 'zeta', 1);
-assignin('base', 'omega', 10);
+assignin('base', 'zeta', zeta);
+assignin('base', 'omega', omega);
 assignin('base', 'Jhat', handles.Jguess);
 assignin('base', 'J', handles.Jactual);
 assignin('base', 'mup', handles.muP);
@@ -820,26 +824,32 @@ plot(tout,yout(:,1)); % Theta
 hold all
 plot(tout,yout(:,4)); % Theta_m
 xlabel('Time (s)');
-ylabel('Theta (rad)');
-legend('Theta','Theta_m');
+ylabel('\theta (rad)');
+legend('\theta','\theta_m');
 title('Theta over time');
 
 axes(handles.Phat);
 cla(handles.Phat);
 plot(tout,yout(:,2)); % P
 hold all
-% plot(tout,tout./tout*J*omega^2); % P_hat
+P_hat = tout./tout*handles.Jactual*omega^2;
+plot(tout,P_hat, 'r');
+ylim([min(yout(:,2)), max([yout(:,2);P_hat])*1.5]);
 xlabel('Time (s)');
 ylabel('P');
+legend('P','P\_hat');
 title('P over time');
 
 axes(handles.Dhat);
 cla(handles.Dhat);
 plot(tout,yout(:,3));
 hold all
-% plot(tout,tout./tout*J*2*zeta*omega); % D_hat
+D_hat = tout./tout*handles.Jactual*2*zeta*omega;
+plot(tout, D_hat, 'r'); % D_hat
+ylim([min(yout(:,3)), max([yout(:,3);D_hat])*1.5]);
 xlabel('Time (s)');
 ylabel('D');
+legend('D','D\_hat');
 title('D over time');
 
 
