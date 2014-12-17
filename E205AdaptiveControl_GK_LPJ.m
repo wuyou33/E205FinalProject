@@ -502,24 +502,24 @@ function editTimeSpan_Callback(hObject, eventdata, handles)
 % hObject    handle to editTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% prompt = {'Time Span (s)'};
-% dlg_title = 'Time Span';
-% num_lines = 1;
-% tspan = handles.timeSpan;
-% def = {num2str(tspan)};
-% answer = inputdlg(prompt,dlg_title,num_lines,def);
-% assignin('base', 'answer', answer)
-% if isempty(answer)
-%     %do nothing
-% else
-%     % Update time span
-%     handles.timeSpan = min(max(eval(answer{1}),1),300);
-%     tspan = handles.timeSpan;
-%     tstr = sprintf('Time Span: %g', tspan);
-%     set(handles.timeSpanDisp, 'String', tstr);
-% end
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
+prompt = {'Time Span (s)'};
+dlg_title = 'Time Span';
+num_lines = 1;
+tspan = handles.timeSpan;
+def = {num2str(tspan)};
+answer = inputdlg(prompt,dlg_title,num_lines,def);
+assignin('base', 'answer', answer)
+if isempty(answer)
+    %do nothing
+else
+    % Update time span
+    handles.timeSpan = min(max(eval(answer{1}),1),300);
+    tspan = handles.timeSpan;
+    tstr = sprintf('Time Span: %g', tspan);
+    set(handles.timeSpanDisp, 'String', tstr);
+end
+handles = updatePhasePlot(handles);
+guidata(hObject, handles)
 
 % --- Executes on button press in hold_axis_lims.
 function hold_axis_lims_Callback(hObject, eventdata, handles)
@@ -555,10 +555,10 @@ function defaultInitCond_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultInitCond (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% handles.initialConditions = [0.5 0.5];
-% set(handles.initCondDisp, 'String', 'Initial Conditions: [0.5 0.5]');
-% handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
+handles.initialConditions = [0.5 0.5];
+set(handles.initCondDisp, 'String', 'Initial Conditions: [0.5 0.5]');
+handles = updatePhasePlot(handles);
+guidata(hObject, handles)
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over defaultInitCond.
@@ -700,7 +700,6 @@ function dispSignalAmp_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 
 function dispSignalFreq_Callback(hObject, eventdata, handles)
