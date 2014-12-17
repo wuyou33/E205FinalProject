@@ -4,19 +4,19 @@ zeta = 1;
 omega = 10;
 Jhat = 1;
 J = 2;
-mup = 10;
-mud = 10;
+mup = 100;
+mud = 100;
 Amplitude = 1;
 Frequency = 1;
 ditherAmp = 0.00;
 ditherFreq = 100;
 Period = 5;
-inputChoice = 3;
+inputChoice = 2;
 
 initialAngle = 0;
 initialVelocity = 0;
 
-t = 0:0.01:10;
+t = 0:0.01:100;
 [tout, ~, yout] = sim('satelliteProject', t);
 % goal = tout./tout.*thetar;
 
@@ -79,11 +79,12 @@ a1 = omega^2;
 ap = 1/(J*mup);
 ad = 1/(J*mud);
 V = a1*x1.^2+x2.^2+ap*x3.^2+ad*x4.^2;
-Vdot = -4*zeta*omega*x2.^2;
+
 figure(4)
 clf
 hold all
 plot(tout, V);
+Vdot = -4*zeta*omega*x2.^2;
 plot(tout, Vdot);
 % Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+ad*x4.*x4dot;
 % plot(tout, Vdot2)
@@ -98,7 +99,7 @@ plot(tout, Vdot);
 % plot(tout, ap*x3.^2);
 % plot(tout, ad*x4.^2);
 legend('v','vdot');
-ylim([-5 5]);
+% ylim([-5 5]);
 %, 'vdot2','vdot3','1','2','3','4'
 
 % % x1zero = (a1-omega^2)*2.*x1.*x2;

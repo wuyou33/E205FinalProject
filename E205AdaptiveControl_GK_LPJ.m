@@ -58,10 +58,10 @@ handles.output = hObject;
 % Update handles structure
 handles.Jactual = 2;
 handles.Jguess = 1;
-handles.initialAngle = 0.5;
-handles.initialVel = 0.5;
-handles.muP = 100;
-handles.muD = 100;
+handles.initialAngle = 0;
+handles.initialVel = 0;
+handles.muP = 10;
+handles.muD = 10;
 handles.ditherAmplitude = 0.01;
 handles.ditherFreq = 100;
 handles.timeSpan = 50;
@@ -433,8 +433,8 @@ newAngle = str2double(get(hObject,'String'));
 minAngle = 0;
 maxAngle = 2*pi;
 if isnan(newAngle)
-    set(hObject, 'String', '0.5')
-    newAngle = 0.5;
+    set(hObject, 'String', '0')
+    newAngle = 0;
 elseif newAngle > maxAngle
     set(hObject, 'String', num2str(maxAngle))
     newAngle = maxAngle;
@@ -531,8 +531,8 @@ function defaultInitAngle_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultInitAngle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.initialAngle = 0.5;
-set(handles.dispInitAngle, 'String', '0.5');
+handles.initialAngle = 0;
+set(handles.dispInitAngle, 'String', '0');
 guidata(hObject, handles)
 
 % --- Executes on button press in defaultTimeSpan.
@@ -744,7 +744,7 @@ newVel = str2double(get(hObject,'String'));
 minVel = -1000;
 maxVel = 1000;
 if isnan(newVel)
-    set(hObject, 'String', '0.5')
+    set(hObject, 'String', '0')
     newVel = 2;
 elseif newVel > maxVel
     set(hObject, 'String', num2str(maxVel))
@@ -774,8 +774,8 @@ function defaultInitVel_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultInitVel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.initialVel = 0.5;
-set(handles.dispInitVel, 'String', '0.5');
+handles.initialVel = 0;
+set(handles.dispInitVel, 'String', '0');
 guidata(hObject, handles)
 
 
@@ -817,7 +817,8 @@ end
 assignin('base', 'ditherAmp', ditherAmp);
 assignin('base', 'ditherFreq', handles.ditherFreq);
 
-t = 0:0.01:handles.timeSpan;
+dt = 0.001;
+t = 0:dt:handles.timeSpan;
 [tout, ~, yout] = sim('satelliteProject', t);
 
 x1 = yout(:,5); 
@@ -885,14 +886,16 @@ title('Lyapunov over time');
 axes(handles.VDotPlot);
 cla(handles.VDotPlot);
 
-x3dot = yout(:,11); 
-x4dot = yout(:,12); 
-x2dot = yout(:,13); 
-Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+ad*x4.*x4dot;
-plot(tout(floor(length(tout)*9/10):length(tout)), Vdot2(floor(length(tout)*9/10):length(tout)));
-ylims = ylim;
-plot(tout,Vdot2)
-ylim(ylims);
+Vdot = diff(V)./dt;
+% x3dot = yout(:,11); 
+% x4dot = yout(:,12); 
+% x2dot = yout(:,13); 
+% Vdot2 = 2*a1*x1.*x2+2*x2.*x2dot+2*ap*x3.*x3dot+2*ad*x4.*x4dot;
+% % Vdot = -4*zeta*omega*x2.^2;
+% plot(tout(floor(length(tout)*9/10):length(tout)), Vdot2(floor(length(tout)*9/10):length(tout)));
+% ylims = ylim;
+plot(tout(2:end),Vdot)
+% ylim(ylims);
 xlabel('Time (s)');
 ylabel('dV/dt');
 % legend('D','D\_hat');
