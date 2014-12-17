@@ -68,6 +68,9 @@ handles.refAmplitude = 1;
 handles.refFreq = 100;
 handles.results = {};
 
+set(handles.mu_slider,'value', log10(handles.ditherAmplitude));
+set(handles.sigma_slider,'value', log10(handles.ditherFreq));
+
 guidata(hObject, handles);
 
 % UIWAIT makes E205AdaptiveControl_GK_LPJ wait for user response (see UIRESUME)
@@ -297,11 +300,12 @@ function mu_slider_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of mu_disp as text
 %        str2double(get(hObject,'String')) returns contents of mu_disp as a double
-% handles.mu = get(hObject,'value');
-% mu_str = sprintf('%g', handles.mu);
-% set(handles.mu_disp, 'String', mu_str);
+sliderValue = get(hObject,'value');
+handles.ditherAmplitude = 10^sliderValue;
+ditherAmp_str = sprintf('%g', handles.ditherAmplitude);
+set(handles.mu_disp, 'String', ditherAmp_str);
 % handles = updatePhasePlot(handles);
-% guidata(hObject, handles)
+guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
 function mu_slider_CreateFcn(hObject, eventdata, handles)
@@ -329,6 +333,12 @@ function sigma_slider_Callback(hObject, eventdata, handles)
 % set(handles.sigma_disp, 'String', sigma_str);
 % handles = updatePhasePlot(handles);
 % guidata(hObject, handles)
+sliderValue = get(hObject,'value');
+handles.ditherFreq = 10^sliderValue;
+ditherFreq_str = sprintf('%g', handles.ditherFreq);
+set(handles.sigma_disp, 'String', ditherFreq_str);
+% handles = updatePhasePlot(handles);
+guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
 function sigma_slider_CreateFcn(hObject, eventdata, handles)
@@ -351,16 +361,20 @@ function mu_disp_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of mu_disp as text
 %        str2double(get(hObject,'String')) returns contents of mu_disp as a double
-newMu = str2double(get(hObject,'String'));
-if newMu > 2
-    set(hObject, 'String', '2')
-    newMu = 2;
-elseif newMu < 0
-    set(hObject, 'String', '0')
-    newMu = 0;
+newditherAmp = str2double(get(hObject,'String'));
+minditherAmp = 0;
+maxditherAmp = 1;
+if newditherAmp > maxditherAmp
+    set(hObject, 'String', num2str(maxditherAmp))
+    newditherAmp = maxditherAmp;
+elseif newditherAmp < minditherAmp
+    set(hObject, 'String', num2str(minditherAmp))
+    newditherAmp = minditherAmp;
 end
-handles.mu = newMu;
-handles = updatePhasePlot(handles);
+
+handles.ditherAmplitude = newditherAmp;
+set(handles.mu_slider,'value', log10(handles.ditherAmplitude));
+% handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -384,16 +398,20 @@ function sigma_disp_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of sigma_disp as text
 %        str2double(get(hObject,'String')) returns contents of sigma_disp as a double
-newSigma = str2double(get(hObject,'String'));
-if newSigma > 2
-    set(hObject, 'String', '2')
-    newSigma = 2;
-elseif newSigma < 0
-    set(hObject, 'String', '0')
-    newSigma = 0;
+newditherFreq = str2double(get(hObject,'String'));
+
+minditherFreq = 1;
+maxditherFreq = 1000;
+if newditherFreq > maxditherFreq
+    set(hObject, 'String', num2str(maxditherFreq))
+    newditherFreq = maxditherFreq;
+elseif newditherFreq < minditherFreq
+    set(hObject, 'String', num2str(minditherFreq))
+    newditherFreq = minditherFreq;
 end
-handles.sigma = newSigma;
-handles = updatePhasePlot(handles);
+handles.ditherFreq = newditherFreq;
+set(handles.sigma_slider,'value', log10(handles.ditherFreq));
+% handles = updatePhasePlot(handles);
 guidata(hObject, handles)
 
 
@@ -408,8 +426,6 @@ function sigma_disp_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
 
 function initCondDisp_Callback(hObject, eventdata, handles)
 % hObject    handle to initCondDisp (see GCBO)
@@ -599,17 +615,18 @@ function Run_Callback(hObject, eventdata, handles)
 % hObject    handle to Run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 assignin('base', 'zeta', 1);
 assignin('base', 'omega', 10);
-assignin('base', 'Jhat', 1);
-assignin('base', 'J', 2);
+assignin('base', 'Jhat', handles.Jguess);
+assignin('base', 'J', handles.Jactual);
 assignin('base', 'mup', 10);
 assignin('base', 'mud', 10);
 assignin('base', 'inputChoice', 3);
-assignin('base', 'ditherAmp', 0.01);
-assignin('base', 'ditherFreq', 100);
+assignin('base', 'ditherAmp', handles.ditherAmplitude);
+assignin('base', 'ditherFreq', handles.ditherFreq);
 
-t = 0:0.01:10;
+t = 0:0.01:handles.timeSpan;
 [tout, ~, yout] = sim('satelliteProject', t);
 
 x1 = yout(:,5); 
