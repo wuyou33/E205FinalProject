@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 19:08:10
+% Last Modified by GUIDE v2.5 16-Dec-2014 19:59:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -679,9 +679,97 @@ I = T*sum(x1.^2+x2.^2+(u.^2)/100);
 
 
 
+function signalAmpDisp_Callback(hObject, eventdata, handles)
+% hObject    handle to signalAmpDisp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of signalAmpDisp as text
+%        str2double(get(hObject,'String')) returns contents of signalAmpDisp as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function signalAmpDisp_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to signalAmpDisp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 
 
+function signalFreqDisp_Callback(hObject, eventdata, handles)
+% hObject    handle to signalFreqDisp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of signalFreqDisp as text
+%        str2double(get(hObject,'String')) returns contents of signalFreqDisp as a double
 
 
+% --- Executes during object creation, after setting all properties.
+function signalFreqDisp_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to signalFreqDisp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
 
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in signalTypeSelect.
+function signalTypeSelect_Callback(hObject, eventdata, handles)
+% hObject    handle to signalTypeSelect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns signalTypeSelect contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from signalTypeSelect
+
+
+% --- Executes during object creation, after setting all properties.
+function signalTypeSelect_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to signalTypeSelect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in editSignalAmplitude.
+function editSignalAmplitude_Callback(hObject, eventdata, handles)
+% hObject    handle to editSignalAmplitude (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in editSignalFreq.
+function editSignalFreq_Callback(hObject, eventdata, handles)
+% hObject    handle to editSignalFreq (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in defaultSignalAmplitude.
+function defaultSignalAmplitude_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultSignalAmplitude (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in defaultSignalFreq.
+function defaultSignalFreq_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultSignalFreq (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
