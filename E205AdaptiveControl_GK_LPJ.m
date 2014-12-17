@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 19:59:27
+% Last Modified by GUIDE v2.5 16-Dec-2014 20:18:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -432,9 +432,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in initCondEdit.
-function initCondEdit_Callback(hObject, eventdata, handles)
-% hObject    handle to initCondEdit (see GCBO)
+% --- Executes on button press in editInitCond.
+function editInitCond_Callback(hObject, eventdata, handles)
+% hObject    handle to editInitCond (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % prompt = {'Intial Prey Biomass','Initial Predator Biomass'};
@@ -479,9 +479,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in timeSpanButton.
-function timeSpanButton_Callback(hObject, eventdata, handles)
-% hObject    handle to timeSpanButton (see GCBO)
+% --- Executes on button press in editTimeSpan.
+function editTimeSpan_Callback(hObject, eventdata, handles)
+% hObject    handle to editTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % prompt = {'Time Span (s)'};
@@ -532,9 +532,9 @@ DIRECTION = 0;
 % what is funny, it works!! 
 
 
-% --- Executes on button press in IC_default.
-function IC_default_Callback(hObject, eventdata, handles)
-% hObject    handle to IC_default (see GCBO)
+% --- Executes on button press in defaultInitCond.
+function defaultInitCond_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultInitCond (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % handles.initialConditions = [0.5 0.5];
@@ -543,16 +543,16 @@ function IC_default_Callback(hObject, eventdata, handles)
 % guidata(hObject, handles)
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over IC_default.
-function IC_default_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to IC_default (see GCBO)
+% --- Otherwise, executes on mouse press in 5 pixel border or over defaultInitCond.
+function defaultInitCond_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to defaultInitCond (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in timespan_default.
-function timespan_default_Callback(hObject, eventdata, handles)
-% hObject    handle to timespan_default (see GCBO)
+% --- Executes on button press in defaultTimeSpan.
+function defaultTimeSpan_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % handles.timeSpan = 50;
@@ -561,9 +561,9 @@ function timespan_default_Callback(hObject, eventdata, handles)
 % guidata(hObject, handles)
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over timespan_default.
-function timespan_default_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to timespan_default (see GCBO)
+% --- Otherwise, executes on mouse press in 5 pixel border or over defaultTimeSpan.
+function defaultTimeSpan_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to defaultTimeSpan (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -771,5 +771,79 @@ function defaultSignalAmplitude_Callback(hObject, eventdata, handles)
 % --- Executes on button press in defaultSignalFreq.
 function defaultSignalFreq_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultSignalFreq (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function inertiaDisplay_Callback(hObject, eventdata, handles)
+% hObject    handle to inertiaDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of inertiaDisplay as text
+%        str2double(get(hObject,'String')) returns contents of inertiaDisplay as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function inertiaDisplay_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to inertiaDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in editActualInertia.
+function editActualInertia_Callback(hObject, eventdata, handles)
+% hObject    handle to editActualInertia (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in defaultActualInertia.
+function defaultActualInertia_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultActualInertia (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function inertiaGuessDisplay_Callback(hObject, eventdata, handles)
+% hObject    handle to inertiaGuessDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of inertiaGuessDisplay as text
+%        str2double(get(hObject,'String')) returns contents of inertiaGuessDisplay as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function inertiaGuessDisplay_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to inertiaGuessDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in editInertiaGuess.
+function editInertiaGuess_Callback(hObject, eventdata, handles)
+% hObject    handle to editInertiaGuess (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in defaultInertiaGuess.
+function defaultInertiaGuess_Callback(hObject, eventdata, handles)
+% hObject    handle to defaultInertiaGuess (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
