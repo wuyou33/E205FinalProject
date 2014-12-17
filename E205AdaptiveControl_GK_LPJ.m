@@ -22,7 +22,7 @@ function varargout = E205AdaptiveControl_GK_LPJ(varargin)
 
 % Edit the above text to modify the response to help E205AdaptiveControl_GK_LPJ
 
-% Last Modified by GUIDE v2.5 16-Dec-2014 20:18:36
+% Last Modified by GUIDE v2.5 16-Dec-2014 20:56:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -661,18 +661,18 @@ function Run_ButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-function signalAmpDisp_Callback(hObject, eventdata, handles)
-% hObject    handle to signalAmpDisp (see GCBO)
+function dispSignalAmp_Callback(hObject, eventdata, handles)
+% hObject    handle to dispSignalAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of signalAmpDisp as text
-%        str2double(get(hObject,'String')) returns contents of signalAmpDisp as a double
+% Hints: get(hObject,'String') returns contents of dispSignalAmp as text
+%        str2double(get(hObject,'String')) returns contents of dispSignalAmp as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function signalAmpDisp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to signalAmpDisp (see GCBO)
+function dispSignalAmp_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispSignalAmp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -684,18 +684,18 @@ end
 
 
 
-function signalFreqDisp_Callback(hObject, eventdata, handles)
-% hObject    handle to signalFreqDisp (see GCBO)
+function dispSignalFreq_Callback(hObject, eventdata, handles)
+% hObject    handle to dispSignalFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of signalFreqDisp as text
-%        str2double(get(hObject,'String')) returns contents of signalFreqDisp as a double
+% Hints: get(hObject,'String') returns contents of dispSignalFreq as text
+%        str2double(get(hObject,'String')) returns contents of dispSignalFreq as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function signalFreqDisp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to signalFreqDisp (see GCBO)
+function dispSignalFreq_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to dispSignalFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -714,7 +714,33 @@ function signalTypeSelect_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns signalTypeSelect contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from signalTypeSelect
-
+contents = cellstr(get(hObject,'String'));
+selected = contents{get(hObject,'Value')};
+if (strcmp(selected, 'Constant (Set Point)'))
+    set(handles.textSignalAmp, 'String', 'Set Point')
+    set(handles.textSignalFreq, 'Visible', 'off')
+    set(handles.dispSignalFreq, 'Visible', 'off')
+    set(handles.editSignalFreq, 'Visible', 'off')
+    set(handles.defaultSignalFreq, 'Visible', 'off')
+elseif (strcmp(selected, 'Constant Rotation (Ramp)'))
+    set(handles.textSignalAmp, 'String', 'Set Point')
+    set(handles.textSignalFreq, 'Visible', 'off')
+    set(handles.dispSignalFreq, 'Visible', 'off')
+    set(handles.editSignalFreq, 'Visible', 'off')
+    set(handles.defaultSignalFreq, 'Visible', 'off')
+elseif (strcmp(selected, 'Sinusoid'))
+    set(handles.textSignalAmp, 'String', 'Amplitude')
+    set(handles.textSignalFreq, 'Visible', 'on')
+    set(handles.dispSignalFreq, 'Visible', 'on')
+    set(handles.editSignalFreq, 'Visible', 'on')
+    set(handles.defaultSignalFreq, 'Visible', 'on')
+else %(strcmp(selected, 'Pulse Train'))
+    set(handles.textSignalAmp, 'String', 'Amplitude')
+    set(handles.textSignalFreq, 'Visible', 'on')
+    set(handles.dispSignalFreq, 'Visible', 'on')
+    set(handles.editSignalFreq, 'Visible', 'on')
+    set(handles.defaultSignalFreq, 'Visible', 'on')
+end
 
 % --- Executes during object creation, after setting all properties.
 function signalTypeSelect_CreateFcn(hObject, eventdata, handles)
@@ -734,6 +760,28 @@ function editSignalAmplitude_Callback(hObject, eventdata, handles)
 % hObject    handle to editSignalAmplitude (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+signals = cellstr(get(handles.signalTypeSelect,'String'));
+signalType = signals{get(handles.signalTypeSelect,'Value')};
+if strcmp(signalType, 'Constant (Set Point)') || strcmp(signalType, 'Constant Rotation (Ramp)')
+    prompt = {'Set Point'};
+    dlg_title = 'Set Point';
+else
+    prompt = {'Amplitude'};
+    dlg_title = 'Reference Signal Amplitude';
+end
+num_lines = 1;
+currentAmp = handles.refAmplitude;
+def = {num2str(currentAmp)};
+answer = inputdlg(prompt,dlg_title,num_lines,def);
+if isempty(answer)
+    % do nothing
+else
+    % Update amplitude
+    handles.refAmplitude = min(max(eval(answer{1}),0),2*pi);
+    ampstr = sprintf('%g rad', handles.refAmplitude);
+    set(handles.dispSignalAmp, 'String', ampstr);
+end
+guidata(hObject, handles)
 
 
 % --- Executes on button press in editSignalFreq.
@@ -741,6 +789,21 @@ function editSignalFreq_Callback(hObject, eventdata, handles)
 % hObject    handle to editSignalFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+prompt = {'Frequency'};
+dlg_title = 'Reference Signal Frequency';
+num_lines = 1;
+currentFreq = handles.refFreq;
+def = {num2str(currentFreq)};
+answer = inputdlg(prompt,dlg_title,num_lines,def);
+if isempty(answer)
+    % do nothing
+else
+    % Update frequency
+    handles.refFreq = min(max(eval(answer{1}),1),1000);
+    freqstr = sprintf('%g Hz', handles.refFreq);
+    set(handles.dispSignalFreq, 'String', freqstr);
+end
+guidata(hObject, handles)
 
 
 % --- Executes on button press in defaultSignalAmplitude.
@@ -748,14 +811,20 @@ function defaultSignalAmplitude_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultSignalAmplitude (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.refAmplitude = 1;
+ampstr = sprintf('%g rad', handles.refAmplitude);
+set(handles.dispSignalAmp, 'String', ampstr);
+guidata(hObject, handles)
 
 % --- Executes on button press in defaultSignalFreq.
 function defaultSignalFreq_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultSignalFreq (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.refFreq = min(max(eval(answer{1}),1),1000);
+freqstr = sprintf('%g Hz', handles.refFreq);
+set(handles.dispSignalFreq, 'String', freqstr);
+guidata(hObject, handles)
 
 
 function inertiaDisplay_Callback(hObject, eventdata, handles)
